@@ -1,6 +1,7 @@
 package calc
 
 import (
+	"errors"
 	"fmt"
 	"github.com/philipslstwoyears/calculator-go/internal/stack"
 	"strconv"
@@ -8,18 +9,21 @@ import (
 	"unicode"
 )
 
-func operate(num1 float64, num2 float64, operation string) float64 {
+func operate(num1 float64, num2 float64, operation string) (float64, error) {
 	switch operation {
 	case "+":
-		return num1 + num2
+		return num1 + num2, nil
 	case "-":
-		return num1 - num2
+		return num1 - num2, nil
 	case "*":
-		return num1 * num2
+		return num1 * num2, nil
 	case "/":
-		return num1 / num2
+		if num2 == 0 {
+			return 0, errors.New("Division by zero")
+		}
+		return num1 / num2, nil
 	}
-	return -1
+	return -1, nil
 }
 
 func calcPolishNotation(polishNotation []string) (float64, error) {
@@ -32,7 +36,10 @@ func calcPolishNotation(polishNotation []string) (float64, error) {
 			}
 			num2 := numStack.Pop()
 			num1 := numStack.Pop()
-			result := operate(num1, num2, elem)
+			result, err := operate(num1, num2, elem)
+			if err != nil {
+				return -1, err
+			}
 			numStack.Push(result)
 		case "~":
 			if numStack.IsEmpty() {
@@ -99,7 +106,7 @@ func convertToPolishNotation(expression string) ([]string, error) {
 			num += string(character)
 
 		default:
-			return []string{}, fmt.Errorf("Wrong expression: symbols should be nums or '*/+-().'")
+			return []string{}, fmt.Errorf("inccorect simbol: %s", string(character))
 		}
 
 	}

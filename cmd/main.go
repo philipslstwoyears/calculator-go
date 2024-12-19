@@ -1,18 +1,14 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	calc "github.com/philipslstwoyears/calculator-go/internal/calculator"
+	"github.com/philipslstwoyears/calculator-go/internal/server"
 	"log"
-	"os"
 )
 
 func main() {
-	expression, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-	result, err := calc.Calc(expression)
+	app := server.New()
+	err := app.RunServer()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(result)
 }
