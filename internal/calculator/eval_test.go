@@ -30,6 +30,21 @@ func TestCalc(t *testing.T) {
 			expression:     "1/2",
 			expectedResult: 0.5,
 		},
+		{
+			name:           "priority max",
+			expression:     "-(-11-(1*20/2)-11/2*3)",
+			expectedResult: 37.5,
+		},
+		{
+			name:           "priority 50/50",
+			expression:     "-11-1*20/2",
+			expectedResult: -21,
+		},
+		{
+			name:           "priority not too much",
+			expression:     "-11-1*20/001",
+			expectedResult: -31,
+		},
 	}
 
 	for _, testCase := range testCasesSuccess {
