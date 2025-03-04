@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"github.com/philipslstwoyears/calculator-go/internal/middleware"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -27,8 +28,8 @@ func TestGoodRequest(t *testing.T) {
 			request.Header.Set("Content-Type", "application/json")
 
 			r := httptest.NewRecorder()
-			handler := http.HandlerFunc(CalcHandler)
-			LoggerMiddleware(RecoverMiddleware(handler)).ServeHTTP(r, request)
+			handler := http.HandlerFunc(CalculateHandler)
+			middleware.LoggerMiddleware(middleware.RecoverMiddleware(handler)).ServeHTTP(r, request)
 
 			if r.Code != http.StatusOK {
 				t.Errorf("Wrong status code, expected %d, got: %d", http.StatusOK, r.Code)

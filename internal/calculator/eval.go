@@ -4,20 +4,46 @@ import (
 	"errors"
 	"fmt"
 	"github.com/philipslstwoyears/calculator-go/internal/stack"
+	"os"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 )
 
 func operate(num1 float64, num2 float64, operation string) (float64, error) {
 	switch operation {
 	case "+":
+		additionMs := os.Getenv("TIME_ADDITION_MS")
+		ms, err := strconv.Atoi(additionMs)
+		if err != nil {
+			return 0, err
+		}
+		time.Sleep(time.Duration(ms))
 		return num1 + num2, nil
 	case "-":
+		subMs := os.Getenv("TIME_SUBTRACTION_MS")
+		ms, err := strconv.Atoi(subMs)
+		if err != nil {
+			return 0, err
+		}
+		time.Sleep(time.Duration(ms) * time.Minute)
 		return num1 - num2, nil
 	case "*":
+		multMs := os.Getenv("TIME_MULTIPLICATIONS_MS")
+		ms, err := strconv.Atoi(multMs)
+		if err != nil {
+			return 0, err
+		}
+		time.Sleep(time.Duration(ms))
 		return num1 * num2, nil
 	case "/":
+		divMs := os.Getenv("TIME_DIVISIONS_MS")
+		ms, err := strconv.Atoi(divMs)
+		if err != nil {
+			return 0, err
+		}
+		time.Sleep(time.Duration(ms))
 		if num2 == 0 {
 			return 0, errors.New("Division by zero")
 		}
