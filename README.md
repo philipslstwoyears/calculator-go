@@ -8,13 +8,13 @@
 
 1. **Склонируйте репозиторий**
    ```sh
-   git clone https://github.com/your-repo/calculator-go.git
+   git clone https://github.com/philipslstwoyears/calculator-go.git
    cd calculator-go
    ```
 
 2. **Запустите сервер**
    ```sh
-   go run main.go
+    go run ./cmd/main.go
    ```
    Сервер будет доступен на `http://localhost:8080`.
 
@@ -43,9 +43,8 @@
 ✅ **Сценарий "Успешное выполнение"**
 - Запрос:
   ```sh
-  curl -X POST "http://localhost:8080/api/v1/calculate" \
-       -H "Content-Type: application/json" \
-       -d '{"expression": "5+5"}'
+  curl -X POST "http://localhost:8080/api/v1/calculate" -H "Content-Type: application/json" -d "{\"expression\": \"5+5\"}"
+
   ```
 - Ответ:
   ```json
@@ -57,9 +56,7 @@
 ❌ **Сценарий "Ошибка в выражении"**
 - Запрос:
   ```sh
-  curl -X POST "http://localhost:8080/api/v1/calculate" \
-       -H "Content-Type: application/json" \
-       -d '{"expression": "5/0"}'
+  curl -X POST "http://localhost:8080/api/v1/calculate" -H "Content-Type: application/json" -d '{"expression": "5/0"}'
   ```
 - Ответ:
   ```json
@@ -71,9 +68,7 @@
 ❌ **Сценарий "Неверный формат запроса"**
 - Запрос:
   ```sh
-  curl -X POST "http://localhost:8080/api/v1/calculate" \
-       -H "Content-Type: application/json" \
-       -d '{"wrong_field": "5+5"}'
+  curl -X POST "http://localhost:8080/api/v1/calculate" -H "Content-Type: application/json" -d '{"wrong_field": "5+5"}'
   ```
 - Ответ:
   ```json
@@ -205,9 +200,7 @@
 ## 📌 Пример запроса с `cURL`
 ### 🔹 Отправка выражения на вычисление:
 ```sh
-curl -X POST "http://localhost:8080/api/v1/calculate" \
-     -H "Content-Type: application/json" \
-     -d '{"expression": "5+5"}'
+curl -X POST "http://localhost:8080/api/v1/calculate" -H "Content-Type: application/json" -d '{"expression": "5+5"}'
 ```
 ### 🔹 Получение списка всех выражений:
 ```sh
