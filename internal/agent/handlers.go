@@ -23,7 +23,7 @@ func (a *Application) CalcHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	expression := dto.Expression{
 		Expression: request.Expression,
-		Status:     "Запрос находиться в обработке",
+		Status:     "Выражение принято для вычисления",
 	}
 	id := a.storage.Add(expression)
 	expression.Id = id
