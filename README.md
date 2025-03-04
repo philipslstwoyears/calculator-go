@@ -8,7 +8,7 @@
 
 1. **Склонируйте репозиторий**
    ```sh
-   git clone https://github.com/your-repo/calculator-go.git
+   git clone https://github.com/philipslstwoyears/calculator-go.git
    cd calculator-go
    ```
 
