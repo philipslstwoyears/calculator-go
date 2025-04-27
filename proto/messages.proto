@@ -1,0 +1,31 @@
+syntax = "proto3"; // версия proto файлов
+package calc; // название пакета
+option go_package = ".;calc";
+
+message Request {
+  string expression = 1;
+}
+
+message Id {
+  int32 id = 1;
+}
+
+message Expression {
+  int32 id = 1;
+  string status = 2;
+  float result = 3;
+  string expression = 4;
+}
+
+message Expressions{
+  repeated Expression expressions = 1;
+}
+
+message Empty{}
+// Определение сервиса с двумя методами
+service CalcService {
+  // методы, которые можно будет реализовать и использовать
+  rpc Calc(Request) returns (Id);
+  rpc GetExpressions (Empty) returns (Expressions);
+  rpc GetExpression (Id) returns (Expression);
+}
