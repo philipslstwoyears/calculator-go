@@ -1,77 +1,61 @@
 package server
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/gorilla/mux"
-	"io"
+	"github.com/philipslstwoyears/calculator-go/internal/dto"
+	"github.com/philipslstwoyears/calculator-go/proto"
 	"net/http"
 	"strconv"
 )
 
-func CalculateHandler(w http.ResponseWriter, r *http.Request) {
+func (a *Application) calculateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	request, err := http.NewRequest(r.Method, "http://localhost:8081/internal/calculate", r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	request := new(dto.Request)
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		json.NewEncoder(w).Encode(&dto.ErrorResponse{Error: err.Error()})
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	resp, err := http.DefaultClient.Do(request)
+	id, err := a.agent.Calc(r.Context(), &proto.Request{Expression: request.Expression})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&dto.ErrorResponse{Error: err.Error()})
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	defer resp.Body.Close()
-	all, err := io.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	w.Write(all)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]int32{"id": id.Id})
 }
-func ExpressionsHandler(w http.ResponseWriter, r *http.Request) {
+
+func (a *Application) expressionsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	request, err := http.NewRequest(r.Method, "http://localhost:8081/internal/expressions", r.Body)
+	expressions, err := a.agent.GetExpressions(r.Context(), &proto.Empty{})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&dto.ErrorResponse{Error: err.Error()})
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	resp, err := http.DefaultClient.Do(request)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	defer resp.Body.Close()
-	all, err := io.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	w.Write(all)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(expressions.GetExpressions())
 }
-func ExpressionHandler(w http.ResponseWriter, r *http.Request) {
+
+func (a *Application) expressionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	idStr := vars["id"]
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-	url := fmt.Sprintf("http://localhost:8081/internal/expressions/%d", id)
-	request, err := http.NewRequest(r.Method, url, r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&dto.ErrorResponse{Error: err.Error()})
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	resp, err := http.DefaultClient.Do(request)
+	expression, err := a.agent.GetExpression(r.Context(), &proto.Id{Id: int32(id)})
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		json.NewEncoder(w).Encode(&dto.ErrorResponse{Error: err.Error()})
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	defer resp.Body.Close()
-	all, err := io.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	w.Write(all)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(expression)
+
 }

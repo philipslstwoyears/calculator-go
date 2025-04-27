@@ -8,6 +8,7 @@ import (
 	"github.com/philipslstwoyears/calculator-go/internal/server"
 	"github.com/philipslstwoyears/calculator-go/internal/storage"
 	"log"
+	"time"
 )
 
 func main() {
@@ -19,16 +20,19 @@ func main() {
 	ch := make(chan dto.Expression)
 	workers := calc.New(data, ch)
 	agent := agent.New(data, ch)
-	serv := server.New()
-
-	if err := workers.Start(); err != nil {
-		log.Fatal(err)
-	}
 	go func() {
 		if err := agent.RunServer(); err != nil {
 			log.Fatal(err)
 		}
 	}()
+	time.Sleep(time.Second)
+	serv, err := server.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := workers.Start(); err != nil {
+		log.Fatal(err)
+	}
 	if err := serv.RunServer(); err != nil {
 		log.Fatal(err)
 	}

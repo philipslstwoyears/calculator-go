@@ -1,12 +1,12 @@
 package agent
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/philipslstwoyears/calculator-go/internal/dto"
-	"github.com/philipslstwoyears/calculator-go/internal/middleware"
 	"github.com/philipslstwoyears/calculator-go/internal/storage"
+	"github.com/philipslstwoyears/calculator-go/proto"
+	"google.golang.org/grpc"
 	"log"
-	"net/http"
+	"net"
 	"os"
 )
 
@@ -24,6 +24,7 @@ func ConfigFromEnv() *Config {
 }
 
 type Application struct {
+	proto.UnimplementedCalcServiceServer
 	config  *Config
 	storage *storage.Storage
 	input   chan dto.Expression
@@ -37,11 +38,13 @@ func New(s *storage.Storage, input chan dto.Expression) *Application {
 	}
 }
 func (a *Application) RunServer() error {
-	r := mux.NewRouter()
-	r.HandleFunc("/internal/calculate", a.CalcHandler)
-	r.HandleFunc("/internal/expressions", a.ExpressionsHandler)
-	r.HandleFunc("/internal/expressions/{id}", a.ExpressionHandler)
-	r.Use(middleware.LoggerMiddleware, middleware.RecoverMiddleware)
-	log.Println("Listening on port", a.config.Addr)
-	return http.ListenAndServe(":"+a.config.Addr, r)
+	lis, err := net.Listen("tcp", "0.0.0.0:"+a.config.Addr)
+	if err != nil {
+		return err
+	}
+	log.Printf("[AGENT SERVER] listening for gRPC, addr: %s", a.config.Addr)
+	privateGRPC := grpc.NewServer()
+	proto.RegisterCalcServiceServer(privateGRPC, a)
+
+	return privateGRPC.Serve(lis)
 }
