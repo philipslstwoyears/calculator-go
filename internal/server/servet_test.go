@@ -9,6 +9,7 @@ import (
 	"testing"
 )
 
+// TODO: в тестах нужно замокать grpc запросы
 func TestGoodRequest(t *testing.T) {
 	testCases := []struct {
 		GetBody        string

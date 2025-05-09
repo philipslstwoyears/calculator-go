@@ -10,11 +10,11 @@ import (
 )
 
 type Worker struct {
-	storage *storage.Storage
+	storage storage.Storage
 	input   chan dto.Expression
 }
 
-func New(storage *storage.Storage, input chan dto.Expression) *Worker {
+func New(storage storage.Storage, input chan dto.Expression) *Worker {
 	return &Worker{
 		storage: storage,
 		input:   input,

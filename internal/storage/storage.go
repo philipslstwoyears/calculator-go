@@ -7,16 +7,25 @@ import (
 	"sort"
 )
 
-type Storage struct {
+type Storage interface {
+	AddExpression(e dto.Expression) (int, error)
+	GetExpression(id int) (dto.Expression, bool)
+	UpdateExpression(e dto.Expression) error
+	GetExpressions(userID int) ([]dto.Expression, error)
+	AddUser(e dto.User) (int, error)
+	GetUser(login string) (dto.User, bool)
+}
+
+type DbStorage struct {
 	db *sql.DB
 }
 
-func New(db *sql.DB) *Storage {
-	return &Storage{
+func New(db *sql.DB) *DbStorage {
+	return &DbStorage{
 		db: db,
 	}
 }
-func (s *Storage) AddExpression(e dto.Expression) (int, error) {
+func (s *DbStorage) AddExpression(e dto.Expression) (int, error) {
 	var q = `
 	INSERT INTO expressions (expression, user_id, result, status) values ($1, $2, $3, $4)
 	`
@@ -32,7 +41,7 @@ func (s *Storage) AddExpression(e dto.Expression) (int, error) {
 	return int(id), nil
 }
 
-func (s *Storage) UpdateExpression(e dto.Expression) error {
+func (s *DbStorage) UpdateExpression(e dto.Expression) error {
 	q := `
 	UPDATE expressions
 	SET expression = ?, user_id = ?, result = ?, status = ?
@@ -42,7 +51,7 @@ func (s *Storage) UpdateExpression(e dto.Expression) error {
 	return err
 }
 
-func (s *Storage) GetExpression(id int) (dto.Expression, bool) {
+func (s *DbStorage) GetExpression(id int) (dto.Expression, bool) {
 	var e dto.Expression
 	q := `
 	SELECT id, expression, user_id, result, status
@@ -59,7 +68,7 @@ func (s *Storage) GetExpression(id int) (dto.Expression, bool) {
 	return e, true
 }
 
-func (s *Storage) GetExpressions(userID int) []dto.Expression {
+func (s *DbStorage) GetExpressions(userID int) ([]dto.Expression, error) {
 	var expressions []dto.Expression
 
 	q := `
@@ -70,7 +79,7 @@ func (s *Storage) GetExpressions(userID int) []dto.Expression {
 
 	rows, err := s.db.Query(q, userID)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -78,17 +87,17 @@ func (s *Storage) GetExpressions(userID int) []dto.Expression {
 		var e dto.Expression
 		err := rows.Scan(&e.ID, &e.Expression, &e.UserID, &e.Result, &e.Status)
 		if err != nil {
-			continue
+			return nil, err
 		}
 		expressions = append(expressions, e)
 	}
 	sort.Slice(expressions, func(i, j int) bool {
 		return expressions[i].ID < expressions[j].ID
 	})
-	return expressions
+	return expressions, nil
 }
 
-func (s *Storage) AddUser(e dto.User) (int, error) {
+func (s *DbStorage) AddUser(e dto.User) (int, error) {
 	var q = `
 	INSERT INTO users (login, password) values ($1, $2)
 	`
@@ -104,7 +113,7 @@ func (s *Storage) AddUser(e dto.User) (int, error) {
 	return int(id), nil
 }
 
-func (s *Storage) GetUser(login string) (dto.User, bool) {
+func (s *DbStorage) GetUser(login string) (dto.User, bool) {
 	var e dto.User
 	q := `
 	SELECT password, user_id, login

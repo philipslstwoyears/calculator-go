@@ -26,11 +26,11 @@ func ConfigFromEnv() *Config {
 type Application struct {
 	proto.UnimplementedCalcServiceServer
 	config  *Config
-	Storage *storage.Storage
+	Storage storage.Storage
 	input   chan dto.Expression
 }
 
-func New(s *storage.Storage, input chan dto.Expression) *Application {
+func New(s storage.Storage, input chan dto.Expression) *Application {
 	return &Application{
 		config:  ConfigFromEnv(),
 		Storage: s,

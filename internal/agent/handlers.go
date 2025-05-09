@@ -26,7 +26,10 @@ func (a *Application) Calc(ctx context.Context, r *proto.Request) (*proto.Id, er
 }
 
 func (a *Application) GetExpressions(ctx context.Context, id *proto.Id) (*proto.Expressions, error) {
-	exp := a.Storage.GetExpressions(int(id.GetId()))
+	exp, err := a.Storage.GetExpressions(int(id.GetId()))
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
 	result := make([]*proto.Expression, len(exp))
 	for i, expression := range exp {
 		result[i] = &proto.Expression{
