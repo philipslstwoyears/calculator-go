@@ -22,6 +22,8 @@ const (
 	CalcService_Calc_FullMethodName           = "/calc.CalcService/Calc"
 	CalcService_GetExpressions_FullMethodName = "/calc.CalcService/GetExpressions"
 	CalcService_GetExpression_FullMethodName  = "/calc.CalcService/GetExpression"
+	CalcService_Login_FullMethodName          = "/calc.CalcService/Login"
+	CalcService_Register_FullMethodName       = "/calc.CalcService/Register"
 )
 
 // CalcServiceClient is the client API for CalcService service.
@@ -32,8 +34,10 @@ const (
 type CalcServiceClient interface {
 	// методы, которые можно будет реализовать и использовать
 	Calc(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Id, error)
-	GetExpressions(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Expressions, error)
+	GetExpressions(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Expressions, error)
 	GetExpression(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Expression, error)
+	Login(ctx context.Context, in *User, opts ...grpc.CallOption) (*Id, error)
+	Register(ctx context.Context, in *User, opts ...grpc.CallOption) (*Id, error)
 }
 
 type calcServiceClient struct {
@@ -54,7 +58,7 @@ func (c *calcServiceClient) Calc(ctx context.Context, in *Request, opts ...grpc.
 	return out, nil
 }
 
-func (c *calcServiceClient) GetExpressions(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Expressions, error) {
+func (c *calcServiceClient) GetExpressions(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Expressions, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Expressions)
 	err := c.cc.Invoke(ctx, CalcService_GetExpressions_FullMethodName, in, out, cOpts...)
@@ -74,6 +78,26 @@ func (c *calcServiceClient) GetExpression(ctx context.Context, in *Id, opts ...g
 	return out, nil
 }
 
+func (c *calcServiceClient) Login(ctx context.Context, in *User, opts ...grpc.CallOption) (*Id, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Id)
+	err := c.cc.Invoke(ctx, CalcService_Login_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *calcServiceClient) Register(ctx context.Context, in *User, opts ...grpc.CallOption) (*Id, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Id)
+	err := c.cc.Invoke(ctx, CalcService_Register_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CalcServiceServer is the server API for CalcService service.
 // All implementations must embed UnimplementedCalcServiceServer
 // for forward compatibility.
@@ -82,8 +106,10 @@ func (c *calcServiceClient) GetExpression(ctx context.Context, in *Id, opts ...g
 type CalcServiceServer interface {
 	// методы, которые можно будет реализовать и использовать
 	Calc(context.Context, *Request) (*Id, error)
-	GetExpressions(context.Context, *Empty) (*Expressions, error)
+	GetExpressions(context.Context, *Id) (*Expressions, error)
 	GetExpression(context.Context, *Id) (*Expression, error)
+	Login(context.Context, *User) (*Id, error)
+	Register(context.Context, *User) (*Id, error)
 	mustEmbedUnimplementedCalcServiceServer()
 }
 
@@ -97,11 +123,17 @@ type UnimplementedCalcServiceServer struct{}
 func (UnimplementedCalcServiceServer) Calc(context.Context, *Request) (*Id, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Calc not implemented")
 }
-func (UnimplementedCalcServiceServer) GetExpressions(context.Context, *Empty) (*Expressions, error) {
+func (UnimplementedCalcServiceServer) GetExpressions(context.Context, *Id) (*Expressions, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetExpressions not implemented")
 }
 func (UnimplementedCalcServiceServer) GetExpression(context.Context, *Id) (*Expression, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetExpression not implemented")
+}
+func (UnimplementedCalcServiceServer) Login(context.Context, *User) (*Id, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedCalcServiceServer) Register(context.Context, *User) (*Id, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
 func (UnimplementedCalcServiceServer) mustEmbedUnimplementedCalcServiceServer() {}
 func (UnimplementedCalcServiceServer) testEmbeddedByValue()                     {}
@@ -143,7 +175,7 @@ func _CalcService_Calc_Handler(srv interface{}, ctx context.Context, dec func(in
 }
 
 func _CalcService_GetExpressions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Empty)
+	in := new(Id)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -155,7 +187,7 @@ func _CalcService_GetExpressions_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: CalcService_GetExpressions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CalcServiceServer).GetExpressions(ctx, req.(*Empty))
+		return srv.(CalcServiceServer).GetExpressions(ctx, req.(*Id))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -178,6 +210,42 @@ func _CalcService_GetExpression_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CalcService_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CalcServiceServer).Login(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CalcService_Login_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CalcServiceServer).Login(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CalcService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(User)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CalcServiceServer).Register(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CalcService_Register_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CalcServiceServer).Register(ctx, req.(*User))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CalcService_ServiceDesc is the grpc.ServiceDesc for CalcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -196,6 +264,14 @@ var CalcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetExpression",
 			Handler:    _CalcService_GetExpression_Handler,
+		},
+		{
+			MethodName: "Login",
+			Handler:    _CalcService_Login_Handler,
+		},
+		{
+			MethodName: "Register",
+			Handler:    _CalcService_Register_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -24,6 +24,7 @@ const (
 type Request struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Expression    string                 `protobuf:"bytes,1,opt,name=expression,proto3" json:"expression,omitempty"`
+	UserId        int32                  `protobuf:"varint,2,opt,name=userId,proto3" json:"userId,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -63,6 +64,13 @@ func (x *Request) GetExpression() string {
 		return x.Expression
 	}
 	return ""
+}
+
+func (x *Request) GetUserId() int32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
 }
 
 type Id struct {
@@ -115,6 +123,7 @@ type Expression struct {
 	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
 	Result        float32                `protobuf:"fixed32,3,opt,name=result,proto3" json:"result,omitempty"`
 	Expression    string                 `protobuf:"bytes,4,opt,name=expression,proto3" json:"expression,omitempty"`
+	UserId        int32                  `protobuf:"varint,5,opt,name=userId,proto3" json:"userId,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -177,6 +186,13 @@ func (x *Expression) GetExpression() string {
 	return ""
 }
 
+func (x *Expression) GetUserId() int32 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
 type Expressions struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Expressions   []*Expression          `protobuf:"bytes,1,rep,name=expressions,proto3" json:"expressions,omitempty"`
@@ -221,26 +237,28 @@ func (x *Expressions) GetExpressions() []*Expression {
 	return nil
 }
 
-type Empty struct {
+type User struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Login         string                 `protobuf:"bytes,1,opt,name=login,proto3" json:"login,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Empty) Reset() {
-	*x = Empty{}
+func (x *User) Reset() {
+	*x = User{}
 	mi := &file_proto_messages_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Empty) String() string {
+func (x *User) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Empty) ProtoMessage() {}
+func (*User) ProtoMessage() {}
 
-func (x *Empty) ProtoReflect() protoreflect.Message {
+func (x *User) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_messages_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -252,22 +270,37 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Empty.ProtoReflect.Descriptor instead.
-func (*Empty) Descriptor() ([]byte, []int) {
+// Deprecated: Use User.ProtoReflect.Descriptor instead.
+func (*User) Descriptor() ([]byte, []int) {
 	return file_proto_messages_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *User) GetLogin() string {
+	if x != nil {
+		return x.Login
+	}
+	return ""
+}
+
+func (x *User) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
 }
 
 var File_proto_messages_proto protoreflect.FileDescriptor
 
 const file_proto_messages_proto_rawDesc = "" +
 	"\n" +
-	"\x14proto/messages.proto\x12\x04calc\")\n" +
+	"\x14proto/messages.proto\x12\x04calc\"A\n" +
 	"\aRequest\x12\x1e\n" +
 	"\n" +
 	"expression\x18\x01 \x01(\tR\n" +
-	"expression\"\x14\n" +
+	"expression\x12\x16\n" +
+	"\x06userId\x18\x02 \x01(\x05R\x06userId\"\x14\n" +
 	"\x02Id\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x05R\x02id\"l\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"\x84\x01\n" +
 	"\n" +
 	"Expression\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x16\n" +
@@ -275,14 +308,21 @@ const file_proto_messages_proto_rawDesc = "" +
 	"\x06result\x18\x03 \x01(\x02R\x06result\x12\x1e\n" +
 	"\n" +
 	"expression\x18\x04 \x01(\tR\n" +
-	"expression\"A\n" +
+	"expression\x12\x16\n" +
+	"\x06userId\x18\x05 \x01(\x05R\x06userId\"A\n" +
 	"\vExpressions\x122\n" +
-	"\vexpressions\x18\x01 \x03(\v2\x10.calc.ExpressionR\vexpressions\"\a\n" +
-	"\x05Empty2\x8d\x01\n" +
+	"\vexpressions\x18\x01 \x03(\v2\x10.calc.ExpressionR\vexpressions\"8\n" +
+	"\x04User\x12\x14\n" +
+	"\x05login\x18\x01 \x01(\tR\x05login\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword2\xcb\x01\n" +
 	"\vCalcService\x12\x1f\n" +
-	"\x04Calc\x12\r.calc.Request\x1a\b.calc.Id\x120\n" +
-	"\x0eGetExpressions\x12\v.calc.Empty\x1a\x11.calc.Expressions\x12+\n" +
-	"\rGetExpression\x12\b.calc.Id\x1a\x10.calc.ExpressionB\bZ\x06.;calcb\x06proto3"
+	"\x04Calc\x12\r.calc.Request\x1a\b.calc.Id\x12-\n" +
+	"\x0eGetExpressions\x12\b.calc.Id\x1a\x11.calc.Expressions\x12+\n" +
+	"\rGetExpression\x12\b.calc.Id\x1a\x10.calc.Expression\x12\x1d\n" +
+	"\x05Login\x12\n" +
+	".calc.User\x1a\b.calc.Id\x12 \n" +
+	"\bRegister\x12\n" +
+	".calc.User\x1a\b.calc.IdB\bZ\x06.;calcb\x06proto3"
 
 var (
 	file_proto_messages_proto_rawDescOnce sync.Once
@@ -302,18 +342,22 @@ var file_proto_messages_proto_goTypes = []any{
 	(*Id)(nil),          // 1: calc.Id
 	(*Expression)(nil),  // 2: calc.Expression
 	(*Expressions)(nil), // 3: calc.Expressions
-	(*Empty)(nil),       // 4: calc.Empty
+	(*User)(nil),        // 4: calc.User
 }
 var file_proto_messages_proto_depIdxs = []int32{
 	2, // 0: calc.Expressions.expressions:type_name -> calc.Expression
 	0, // 1: calc.CalcService.Calc:input_type -> calc.Request
-	4, // 2: calc.CalcService.GetExpressions:input_type -> calc.Empty
+	1, // 2: calc.CalcService.GetExpressions:input_type -> calc.Id
 	1, // 3: calc.CalcService.GetExpression:input_type -> calc.Id
-	1, // 4: calc.CalcService.Calc:output_type -> calc.Id
-	3, // 5: calc.CalcService.GetExpressions:output_type -> calc.Expressions
-	2, // 6: calc.CalcService.GetExpression:output_type -> calc.Expression
-	4, // [4:7] is the sub-list for method output_type
-	1, // [1:4] is the sub-list for method input_type
+	4, // 4: calc.CalcService.Login:input_type -> calc.User
+	4, // 5: calc.CalcService.Register:input_type -> calc.User
+	1, // 6: calc.CalcService.Calc:output_type -> calc.Id
+	3, // 7: calc.CalcService.GetExpressions:output_type -> calc.Expressions
+	2, // 8: calc.CalcService.GetExpression:output_type -> calc.Expression
+	1, // 9: calc.CalcService.Login:output_type -> calc.Id
+	1, // 10: calc.CalcService.Register:output_type -> calc.Id
+	6, // [6:11] is the sub-list for method output_type
+	1, // [1:6] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name

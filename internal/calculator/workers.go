@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/philipslstwoyears/calculator-go/internal/dto"
 	"github.com/philipslstwoyears/calculator-go/internal/storage"
+	"log"
 	"os"
 	"strconv"
 )
@@ -40,6 +41,9 @@ func (w *Worker) worker() {
 			expression.Status = "Ok"
 		}
 		expression.Result = calc
-		w.storage.Update(expression)
+		err = w.storage.UpdateExpression(expression)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }

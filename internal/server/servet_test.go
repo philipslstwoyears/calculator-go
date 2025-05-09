@@ -26,9 +26,9 @@ func TestGoodRequest(t *testing.T) {
 		t.Run(tc.GetBody, func(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer([]byte(tc.GetBody)))
 			request.Header.Set("Content-Type", "application/json")
-
+			a := Application{}
 			r := httptest.NewRecorder()
-			handler := http.HandlerFunc(CalculateHandler)
+			handler := http.HandlerFunc(a.CalculateHandler)
 			middleware.LoggerMiddleware(middleware.RecoverMiddleware(handler)).ServeHTTP(r, request)
 
 			if r.Code != http.StatusOK {

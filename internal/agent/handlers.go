@@ -11,24 +11,28 @@ import (
 func (a *Application) Calc(ctx context.Context, r *proto.Request) (*proto.Id, error) {
 	expression := dto.Expression{
 		Expression: r.Expression,
+		UserID:     int(r.UserId),
 		Status:     "Выражение принято для вычисления",
 	}
-	id := a.storage.Add(expression)
-	expression.Id = id
+	id, err := a.Storage.AddExpression(expression)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	expression.ID = id
 	a.input <- expression
 	return &proto.Id{
 		Id: int32(id),
 	}, nil
 }
 
-func (a *Application) GetExpressions(context.Context, *proto.Empty) (*proto.Expressions, error) {
-	exp := a.storage.GetAll()
+func (a *Application) GetExpressions(ctx context.Context, id *proto.Id) (*proto.Expressions, error) {
+	exp := a.Storage.GetExpressions(int(id.GetId()))
 	result := make([]*proto.Expression, len(exp))
 	for i, expression := range exp {
 		result[i] = &proto.Expression{
 			Expression: expression.Expression,
 			Status:     expression.Status,
-			Id:         int32(expression.Id),
+			Id:         int32(expression.ID),
 			Result:     float32(expression.Result),
 		}
 	}
@@ -38,7 +42,7 @@ func (a *Application) GetExpressions(context.Context, *proto.Empty) (*proto.Expr
 }
 
 func (a *Application) GetExpression(ctx context.Context, id *proto.Id) (*proto.Expression, error) {
-	i, ok := a.storage.Get(int(id.GetId()))
+	i, ok := a.Storage.GetExpression(int(id.GetId()))
 	if !ok {
 		return nil, status.Error(codes.NotFound, "expression not found")
 	}
@@ -46,7 +50,35 @@ func (a *Application) GetExpression(ctx context.Context, id *proto.Id) (*proto.E
 		Expression: i.Expression,
 		Status:     i.Status,
 		Result:     float32(i.Result),
-		Id:         int32(i.Id),
+		Id:         int32(i.ID),
 	}
 	return expression, nil
+}
+func (a *Application) Login(ctx context.Context, in *proto.User) (*proto.Id, error) {
+	user, ok := a.Storage.GetUser(in.Login)
+	if !ok {
+		return nil, status.Error(codes.NotFound, "user not found")
+	}
+	if user.Password != in.Password {
+		return nil, status.Error(codes.InvalidArgument, "wrong password")
+	}
+	return &proto.Id{
+		Id: int32(user.Id),
+	}, nil
+}
+func (a *Application) Register(ctx context.Context, in *proto.User) (*proto.Id, error) {
+	_, ok := a.Storage.GetUser(in.Login)
+	if ok {
+		return nil, status.Error(codes.AlreadyExists, "user is already registered")
+	}
+	id, err := a.Storage.AddUser(dto.User{
+		Login:    in.Login,
+		Password: in.Password,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &proto.Id{
+		Id: int32(id),
+	}, nil
 }

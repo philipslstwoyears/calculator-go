@@ -5,12 +5,19 @@ type ErrorResponse struct {
 }
 
 type Expression struct {
-	Id         int     `json:"id"`
+	UserID     int     `json:"user_id"`
+	ID         int     `json:"id"`
 	Status     string  `json:"status"`
 	Result     float64 `json:"result"`
 	Expression string  `json:"-"`
 }
 
+type User struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+	Id       int    `json:"id"`
+}
+
 type Request struct {
-	Expression string `json:""expression""`
+	Expression string `json:"expression"`
 }

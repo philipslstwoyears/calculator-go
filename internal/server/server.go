@@ -43,7 +43,9 @@ func New() (*Application, error) {
 }
 func (a *Application) RunServer() error {
 	r := mux.NewRouter()
-	r.HandleFunc("/api/v1/calculate", a.calculateHandler)
+	r.HandleFunc("/api/v1/register", a.registerHandler)
+	r.HandleFunc("/api/v1/login", a.loginHandler)
+	r.HandleFunc("/api/v1/calculate", a.CalculateHandler)
 	r.HandleFunc("/api/v1/expressions", a.expressionsHandler)
 	r.HandleFunc("/api/v1/expressions/{id}", a.expressionHandler)
 	r.Use(middleware.LoggerMiddleware, middleware.RecoverMiddleware)

@@ -26,14 +26,14 @@ func ConfigFromEnv() *Config {
 type Application struct {
 	proto.UnimplementedCalcServiceServer
 	config  *Config
-	storage *storage.Storage
+	Storage *storage.Storage
 	input   chan dto.Expression
 }
 
 func New(s *storage.Storage, input chan dto.Expression) *Application {
 	return &Application{
 		config:  ConfigFromEnv(),
-		storage: s,
+		Storage: s,
 		input:   input,
 	}
 }
