@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"github.com/philipslstwoyears/calculator-go/internal/middleware"
+	"github.com/philipslstwoyears/calculator-go/internal/mocks"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -27,7 +28,8 @@ func TestGoodRequest(t *testing.T) {
 		t.Run(tc.GetBody, func(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer([]byte(tc.GetBody)))
 			request.Header.Set("Content-Type", "application/json")
-			a := Application{}
+			cl := mocks.NewMockCalcServiceClient()
+			a := Application{agent: cl}
 			r := httptest.NewRecorder()
 			handler := http.HandlerFunc(a.CalculateHandler)
 			middleware.LoggerMiddleware(middleware.RecoverMiddleware(handler)).ServeHTTP(r, request)
