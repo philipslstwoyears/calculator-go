@@ -9,7 +9,7 @@ type Expression struct {
 	ID         int     `json:"id"`
 	Status     string  `json:"status"`
 	Result     float64 `json:"result"`
-	Expression string  `json:"-"`
+	Expression string  `json:"expression"`
 }
 
 type User struct {

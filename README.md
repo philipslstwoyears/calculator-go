@@ -170,12 +170,14 @@ curl -X GET http://localhost:8080/api/v1/expressions -H "Cookie: id=1"
 ```json
 [
   {
-    "id": 1,
-    "expression": "2+2*2",
+     "user_id": 1,
+     "id": 1, 
+     "expression": "2+2*2",
     "status": "completed",
     "result": 6
   },
   {
+     "user_id": 1,
     "id": 2,
     "expression": "3+5*5",
     "status": "completed",
@@ -218,6 +220,7 @@ curl -X GET http://localhost:8080/api/v1/expressions/1 -H "Cookie: id=1"
 
 ```json
 {
+   "user_id": 1,
   "id": 1,
   "expression": "2+2*2",
   "status": "completed",
