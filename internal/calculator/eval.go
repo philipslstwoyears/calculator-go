@@ -27,7 +27,7 @@ func operate(num1 float64, num2 float64, operation string) (float64, error) {
 		if err != nil {
 			return 0, err
 		}
-		time.Sleep(time.Duration(ms) * time.Minute)
+		time.Sleep(time.Duration(ms))
 		return num1 - num2, nil
 	case "*":
 		multMs := os.Getenv("TIME_MULTIPLICATIONS_MS")

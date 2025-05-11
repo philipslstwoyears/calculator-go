@@ -1,10 +1,16 @@
 package calc
 
 import (
+	"github.com/joho/godotenv"
+	"log"
 	"testing"
 )
 
 func TestCalc(t *testing.T) {
+	err := godotenv.Load("../../cmd/.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	testCasesSuccess := []struct {
 		name           string
 		expression     string
@@ -51,7 +57,7 @@ func TestCalc(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			val, err := Calc(testCase.expression)
 			if err != nil {
-				t.Fatalf("successful case %s returns error", testCase.expression)
+				t.Fatalf("successful case %s returns error: %v", testCase.expression, err)
 			}
 			if val != testCase.expectedResult {
 				t.Fatalf("%f should be equal %f", val, testCase.expectedResult)

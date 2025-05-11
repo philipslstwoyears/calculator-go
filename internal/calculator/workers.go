@@ -2,18 +2,19 @@ package calc
 
 import (
 	"fmt"
-	"github.com/philipslstwoyears/calculator-go/internal/dto"
+	"github.com/philipslstwoyears/calculator-go/internal/model/dto"
 	"github.com/philipslstwoyears/calculator-go/internal/storage"
+	"log"
 	"os"
 	"strconv"
 )
 
 type Worker struct {
-	storage *storage.Storage
+	storage storage.Storage
 	input   chan dto.Expression
 }
 
-func New(storage *storage.Storage, input chan dto.Expression) *Worker {
+func New(storage storage.Storage, input chan dto.Expression) *Worker {
 	return &Worker{
 		storage: storage,
 		input:   input,
@@ -40,6 +41,9 @@ func (w *Worker) worker() {
 			expression.Status = "Ok"
 		}
 		expression.Result = calc
-		w.storage.Update(expression)
+		err = w.storage.UpdateExpression(expression)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
