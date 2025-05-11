@@ -2,7 +2,7 @@ package calc
 
 import (
 	"fmt"
-	"github.com/philipslstwoyears/calculator-go/internal/dto"
+	"github.com/philipslstwoyears/calculator-go/internal/model/dto"
 	"github.com/philipslstwoyears/calculator-go/internal/storage"
 	"log"
 	"os"

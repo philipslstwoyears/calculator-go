@@ -3,7 +3,8 @@ package server
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"github.com/philipslstwoyears/calculator-go/internal/dto"
+	"github.com/philipslstwoyears/calculator-go/internal/model/convert"
+	"github.com/philipslstwoyears/calculator-go/internal/model/dto"
 	"github.com/philipslstwoyears/calculator-go/proto"
 	"net/http"
 	"strconv"
@@ -60,11 +61,27 @@ func (a *Application) expressionsHandler(w http.ResponseWriter, r *http.Request)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	result := make([]*dto.Expression, len(expressions.GetExpressions()))
+	for i, expression := range expressions.GetExpressions() {
+		result[i] = convert.ExpressionToDTO(expression)
+	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(expressions.GetExpressions())
+	json.NewEncoder(w).Encode(result)
 }
 
 func (a *Application) expressionHandler(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("id")
+	if err != nil {
+		json.NewEncoder(w).Encode(&dto.ErrorResponse{Error: err.Error()})
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	userId, err := strconv.Atoi(cookie.Value)
+	if err != nil {
+		json.NewEncoder(w).Encode(&dto.ErrorResponse{Error: err.Error()})
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	idStr := vars["id"]
@@ -80,8 +97,13 @@ func (a *Application) expressionHandler(w http.ResponseWriter, r *http.Request) 
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	if expression.GetUserId() != int32(userId) {
+		json.NewEncoder(w).Encode(&dto.ErrorResponse{Error: "It is not your expression"})
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(expression)
+	json.NewEncoder(w).Encode(convert.ExpressionToDTO(expression))
 
 }
 

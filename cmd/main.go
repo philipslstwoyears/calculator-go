@@ -6,7 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/philipslstwoyears/calculator-go/internal/agent"
 	calc "github.com/philipslstwoyears/calculator-go/internal/calculator"
-	"github.com/philipslstwoyears/calculator-go/internal/dto"
+	"github.com/philipslstwoyears/calculator-go/internal/model/dto"
 	"github.com/philipslstwoyears/calculator-go/internal/server"
 	"github.com/philipslstwoyears/calculator-go/internal/storage"
 	"log"

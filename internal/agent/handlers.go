@@ -2,7 +2,7 @@ package agent
 
 import (
 	"context"
-	"github.com/philipslstwoyears/calculator-go/internal/dto"
+	"github.com/philipslstwoyears/calculator-go/internal/model/dto"
 	"github.com/philipslstwoyears/calculator-go/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -37,6 +37,7 @@ func (a *Application) GetExpressions(ctx context.Context, id *proto.Id) (*proto.
 			Status:     expression.Status,
 			Id:         int32(expression.ID),
 			Result:     float32(expression.Result),
+			UserId:     int32(expression.UserID),
 		}
 	}
 	return &proto.Expressions{
@@ -54,6 +55,7 @@ func (a *Application) GetExpression(ctx context.Context, id *proto.Id) (*proto.E
 		Status:     i.Status,
 		Result:     float32(i.Result),
 		Id:         int32(i.ID),
+		UserId:     int32(i.UserID),
 	}
 	return expression, nil
 }

@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	dto "github.com/philipslstwoyears/calculator-go/internal/dto"
+	dto "github.com/philipslstwoyears/calculator-go/internal/model/dto"
 )
 
 // MockStorage is a mock of Storage interface.

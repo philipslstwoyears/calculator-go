@@ -1,7 +1,7 @@
 package agent
 
 import (
-	"github.com/philipslstwoyears/calculator-go/internal/dto"
+	"github.com/philipslstwoyears/calculator-go/internal/model/dto"
 	"github.com/philipslstwoyears/calculator-go/internal/storage"
 	"github.com/philipslstwoyears/calculator-go/proto"
 	"google.golang.org/grpc"
