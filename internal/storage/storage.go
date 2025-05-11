@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/philipslstwoyears/calculator-go/internal/dto"
 	"sort"
 )
@@ -98,16 +99,17 @@ func (s *DbStorage) GetExpressions(userID int) ([]dto.Expression, error) {
 }
 
 func (s *DbStorage) AddUser(e dto.User) (int, error) {
-	var q = `
-	INSERT INTO users (login, password) values ($1, $2)
-	`
-	result, err := s.db.Exec(q, e.Login, e.Password)
+	// Используем плейсхолдеры SQLite
+	query := `INSERT INTO users (login, password) VALUES (?, ?)`
+
+	result, err := s.db.Exec(query, e.Login, e.Password)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("AddUser insert error: %w", err)
 	}
+
 	id, err := result.LastInsertId()
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("AddUser lastInsertId error: %w", err)
 	}
 
 	return int(id), nil
@@ -115,17 +117,21 @@ func (s *DbStorage) AddUser(e dto.User) (int, error) {
 
 func (s *DbStorage) GetUser(login string) (dto.User, bool) {
 	var e dto.User
-	q := `
-	SELECT password, user_id, login
-	FROM users
-	WHERE login = ?
-	`
-	err := s.db.QueryRow(q, login).Scan(&e.Password, &e.Id, &e.Login)
+
+	// Выведем лог для отладки
+	fmt.Println("Trying to get user with login:", login)
+
+	query := `SELECT id, login, password FROM users WHERE login = ?`
+
+	err := s.db.QueryRow(query, login).Scan(&e.Id, &e.Login, &e.Password)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
+			fmt.Println("User not found in database")
 			return dto.User{}, false
 		}
+		fmt.Println("GetUser query error:", err)
 		return dto.User{}, false
 	}
+
 	return e, true
 }

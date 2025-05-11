@@ -68,22 +68,22 @@ func CreateTables(ctx context.Context, db *sql.DB) error {
 		usersTable = `
 		CREATE TABLE IF NOT EXISTS users(
 			id INTEGER PRIMARY KEY AUTOINCREMENT, 
-			login TEXT,
-			password TEXT
+			login TEXT NOT NULL UNIQUE,
+			password TEXT NOT NULL
 		);`
 
 		createUniqueLoginIndex = `
 		CREATE UNIQUE INDEX IF NOT EXISTS idx_users_login ON users(login);`
 
 		expressionsTable = `
-		CREATE TABLE IF NOT EXISTS expressions(
-			id INTEGER PRIMARY KEY AUTOINCREMENT, 
-			expression TEXT NOT NULL,
-			user_id INTEGER NOT NULL,
-			status TEXT NOT NULL,
-			reult FLOAT,
-			FOREIGN KEY (user_id) REFERENCES users(id)
-		);`
+	CREATE TABLE IF NOT EXISTS expressions (
+		id INTEGER PRIMARY KEY AUTOINCREMENT, 
+		expression TEXT NOT NULL,
+		user_id INTEGER NOT NULL,
+		status TEXT NOT NULL,
+		result FLOAT,
+		FOREIGN KEY (user_id) REFERENCES users(user_id)
+	);`
 	)
 
 	// Создаём таблицы
